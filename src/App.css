@@ -1,8 +1,6 @@
 .App {
   box-sizing: border-box;
   font-family: Arial, Helvetica, sans-serif;
-  height: 100%;
-  width: 100%;
   display: grid;
   grid-template-areas: 
    'header header'
@@ -14,7 +12,12 @@
 }
 
 .header {
-  background-color: aqua;
+  background-color: #083039;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #EEF5F3;
+  text-align: center;
+  padding: 12px;
   grid-area: header;
 }
 
