@@ -22,13 +22,21 @@
 }
 
 .sidebar {
-  background-color: chartreuse;
+  background-color: #c6c6c6;
   grid-area: sidebar;
 }
 
 .sidebar ul {
   list-style: none;
   margin:0;
+}
+
+.sidebar input {
+  width: 100%;
+  height: 3rem;
+  background-color: #EEF5F3;
+  font-size: 1rem;
+  text-align: center;
 }
 
 .map {
