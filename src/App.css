@@ -37,6 +37,10 @@
 }
 
 .footer {
-  background-color: crimson;
+  background-color: #083039;
+  font-size: .7em;
+  color: #EEF5F3;
+  text-align: center;
+  padding: 6px;
   grid-area: footer;
 }

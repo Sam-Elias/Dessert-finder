@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import AppHeader from './components/AppHeader';
+import AppFooter from './components/AppFooter';
 
 class App extends Component {
   render() {
@@ -21,9 +22,7 @@ class App extends Component {
         <div className="map">
           <div>MAP</div>
         </div>
-        <footer className="footer">
-          <div>Made by Sam Elias</div>
-        </footer>
+        <AppFooter />
 
       </div>
     );
