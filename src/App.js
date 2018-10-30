@@ -3,6 +3,7 @@ import './App.css';
 import AppHeader from './components/AppHeader';
 import AppFooter from './components/AppFooter';
 import AppSidebar from './components/AppSidebar';
+import AppMap from './components/AppMap';
 
 class App extends Component {
   render() {
@@ -10,9 +11,7 @@ class App extends Component {
       <div className="App">
         <AppHeader />
         <AppSidebar />
-        <div className="map">
-          <div>MAP</div>
-        </div>
+        <AppMap />
         <AppFooter />
 
       </div>
