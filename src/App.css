@@ -22,13 +22,20 @@
 }
 
 .sidebar {
-  background-color: #271A0D;
+  background-color: #130d06;
   grid-area: sidebar;
+  color: #EEF5F3;
 }
 
 .sidebar ul {
   list-style: none;
   margin:0;
+  padding: 10px;
+}
+
+.sidebar li {
+  text-align: center;
+  padding: 15px;
 }
 
 .sidebar input {

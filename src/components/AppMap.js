@@ -3,7 +3,9 @@ import React, {Component} from 'react'
 class AppMap extends Component {
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = {
+      markers:[]
+    }
   }
 
   componentDidMount() {
@@ -20,8 +22,7 @@ class AppMap extends Component {
       center: {lat: 34.420830, lng: -119.698189},
       zoom: 13
     })
-    
-    this.props.users.forEach(user => {this.makeMarker(user, map)});
+    this.props.users.forEach(user => {this.makeMarker(user, map)})
   }
 
   makeMarker = (user, map) =>{
@@ -30,12 +31,11 @@ class AppMap extends Component {
       map: map,
       title: user.dessert})
     marker.setMap(map)
-  }
- 
-  
+    this.setState({markers: [...this.state.markers, marker]})
+}
 
   render() {
-    {console.log(this.props.users[0].postion)}
+   
     return (
       <main className="mapContainer">
         <div id="map">MAP</div>
