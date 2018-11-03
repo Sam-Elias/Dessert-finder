@@ -1,6 +1,10 @@
 import React, {Component} from 'react'
 
 class AppMap extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {}
+  }
 
   componentDidMount() {
     this.renderMap()
@@ -16,9 +20,22 @@ class AppMap extends Component {
       center: {lat: 34.420830, lng: -119.698189},
       zoom: 13
     })
+    
+    this.props.users.forEach(user => {this.makeMarker(user, map)});
   }
 
+  makeMarker = (user, map) =>{
+    const marker = new window.google.maps.Marker({
+      position: user.position,
+      map: map,
+      title: user.dessert})
+    marker.setMap(map)
+  }
+ 
+  
+
   render() {
+    {console.log(this.props.users[0].postion)}
     return (
       <main className="mapContainer">
         <div id="map">MAP</div>
