@@ -12,6 +12,7 @@ class AppMap extends Component {
     this.renderMap()
   }
   
+  
   renderMap = () => {
     loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyARW8_P5byg0dhnLlZkraFBi6X_PmMshQQ&v=3&callback=initMap")
     window.initMap = this.initMap

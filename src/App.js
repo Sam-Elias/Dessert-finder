@@ -45,23 +45,27 @@ class App extends Component {
         name: "Robin Chase",
         id: 6,
         dessert: "Cupcakes"}
-      ]
+      ],
+      filteredUsers:[]
     }
   } 
 
   getUsers = () => {}
 
-  filterUsers = (filteredUsers) => {
-    this.setState({users:filteredUsers})
+  filterUsers = (_filteredUsers) => {
+    this.setState({filteredUsers:_filteredUsers})
+    console.log(`filtered users from App: ${this.state.filteredUsers } \nfilteredUsers from sidebar: ${_filteredUsers}` )
   }
 
   render() {
+    console.log(this.state.filteredUsers)
     return (
       <div className="App">
         <AppHeader />
         <AppSidebar 
           users={this.state.users}
           filterUsers={this.filterUsers}
+          filteredUsers={this.state.filteredUsers}
         />
         <AppMap 
           users={this.state.users}
