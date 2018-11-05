@@ -9,45 +9,8 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      users: [
-        {position: {lat: 34.402367, lng: -119.726738},
-        map: this.props.map,
-        name: "Sam Nakamoto",
-        id: 0,
-        dessert: "Apple Pie"},
-        {position: {lat: 34.404507, lng: -119.705515},
-        map: this.props.map,
-        name: "Joe Buterin",
-        id: 1,
-        dessert: "Peach Cobbler"},
-        {position: {lat: 34.414019, lng: -119.727126},
-        map: this.props.map,
-        name: "Katie Lovelace",
-        id: 2,
-        dessert: "Cheesecake"},
-        {position: {lat: 34.433996, lng: -119.711859},
-        map: this.props.map,
-        name: "Adam Smith",
-        id: 3,
-        dessert: "Tiramisu"},
-        {position: {lat: 34.439817, lng: -119.688069},
-        map: this.props.map,
-        name: "John Doe",
-        id: 4,
-        dessert: "Bread Pudding"},
-        {position: {lat: 34.442228, lng: -119.693895},
-        map: this.props.map,
-        name: "Shawn Fanning",
-        id: 5,
-        dessert: "Chocolate Fudge"},
-        {position: {lat: 34.420138, lng: -119.734574},
-        map: this.props.map,
-        name: "Robin Chase",
-        id: 6,
-        dessert: "Cupcakes"}
-      ],
-      filteredUsers:[],
-      userTest: []
+      users: [],
+      filteredUsers:[]
     }
   } 
   
@@ -56,12 +19,10 @@ class App extends Component {
   }
 
   getUsers = () => {
-    let response
     fetch("https://api.myjson.com/bins/cm76u")
-      .then(function (resp) { return resp.json(); })
-      .then(function(data) { response = data.users; });
-    console.log(`USERS response: ${response}`)
-    this.setState({userTest: response})
+      .then(resp => resp.json())
+      .then(data => {this.setState({users: data.users})})
+  
   }
 
   filterUsers = (_filteredUsers) => {
