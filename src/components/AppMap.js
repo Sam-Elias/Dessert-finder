@@ -11,21 +11,17 @@ class AppMap extends Component {
 
   componentDidMount = () => {
     this.renderMap()
+    console.log(this.state.map)
     console.log('didMount ran!')
   }
   
-  componentDidUpdate = (prevProps) => {
-    console.log(`From did update: \n prevprops: ${prevProps.filteredUsers} \n From props.filtered: ${this.props.filteredUsers}` )
+  componentDidUpdate = (prevProps, prevState) => {
+    
     if (prevProps.filteredUsers !== this.props.filteredUsers) {
-      this.setMarkers(null, prevProps.users)
-      console.log('difeerent')
+      console.log(`HHAHAHAHAHAHAAH prevState.markers = ${prevState.markers}`)
+      this.makeMarkers(this.state.map)
+      this.setMarkers(null, prevState.markers)
     }
-    { 
-      /*console.log(`prevProps: ${prevProps.filteredUsers} \n props.filteredUsers: ${this.props.filteredUsers}`)
-    if (this.props.filteredUsers !== prevProps.filteredUsers) {
-      console.log('can call google maps!')
-    }
-  console.log(`Filtered from didUpdate: \n boolean:${this.props.filteredUsers.length >= 1} \n value: ${this.props.filteredUsers}`)*/}
   }
   
   renderMap = () => {
@@ -34,28 +30,45 @@ class AppMap extends Component {
   }
 
   initMap = () => {
-    const _map = new window.google.maps.Map(document.getElementById('map'), {
+    const map = new window.google.maps.Map(document.getElementById('map'), {
       center: {lat: 34.420830, lng: -119.698189},
       zoom: 13
     })
-    console.log(`from initMap: \n filteredUsers? ${this.props.filteredUsers.length >= 1} \n map: ${_map}`)
-    this.makeMarkers(_map)
+    this.setState({map : map})
+    this.makeMarkers(map)
   }
 
   makeMarkers = (map) =>{
+    this.setState({markers: []})
     let marker
-    this.props.users.forEach(user => {
-        console.log("makemarker")
+    console.log(` state.markers from makeMarkers: ${this.state.markers}`)
+    
+    
+    if (this.props.filteredUsers.length === 0) {
+      this.props.users.forEach(user => {
+        console.log('filtered = 0')
         marker = new window.google.maps.Marker({
         position: user.position,
         map: map,
         title: user.dessert})
-      this.setState({markers: [...this.state.markers, marker]})
-    })
-    console.log(` state.markers from makeMarkers: ${this.state.markers}`)
+        this.setState({markers: [...this.state.markers, marker]})
+      })
+    } else {
+      let _markers = []
+      this.props.filteredUsers.forEach(user => {
+        console.log('filtered != 0')
+        marker = new window.google.maps.Marker({
+        position: user.position,
+        map: map,
+        title: user.dessert})
+        _markers = [..._markers, marker]
+      })
+      this.setState({markers : _markers})
   }
+}
     
   setMarkers = (map, markers) => {
+    console.log('setMarkers ran')
     markers.map( marker => {marker.setMap(map)})
   }
     
