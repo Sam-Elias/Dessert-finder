@@ -11,14 +11,10 @@ class AppMap extends Component {
 
   componentDidMount = () => {
     this.renderMap()
-    console.log(this.state.map)
-    console.log('didMount ran!')
   }
   
   componentDidUpdate = (prevProps, prevState) => {
-    
     if (prevProps.filteredUsers !== this.props.filteredUsers) {
-      console.log(`HHAHAHAHAHAHAAH prevState.markers = ${prevState.markers}`)
       this.makeMarkers(this.state.map)
       this.setMarkers(null, prevState.markers)
     }
@@ -39,14 +35,9 @@ class AppMap extends Component {
   }
 
   makeMarkers = (map) =>{
-    this.setState({markers: []})
     let marker
-    console.log(` state.markers from makeMarkers: ${this.state.markers}`)
-    
-    
     if (this.props.filteredUsers.length === 0) {
       this.props.users.forEach(user => {
-        console.log('filtered = 0')
         marker = new window.google.maps.Marker({
         position: user.position,
         map: map,
@@ -56,7 +47,6 @@ class AppMap extends Component {
     } else {
       let _markers = []
       this.props.filteredUsers.forEach(user => {
-        console.log('filtered != 0')
         marker = new window.google.maps.Marker({
         position: user.position,
         map: map,
@@ -68,11 +58,8 @@ class AppMap extends Component {
 }
     
   setMarkers = (map, markers) => {
-    console.log('setMarkers ran')
     markers.map( marker => {marker.setMap(map)})
   }
-    
-
 
   render() {
    

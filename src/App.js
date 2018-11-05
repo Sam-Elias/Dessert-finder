@@ -46,11 +46,23 @@ class App extends Component {
         id: 6,
         dessert: "Cupcakes"}
       ],
-      filteredUsers:[]
+      filteredUsers:[],
+      userTest: []
     }
   } 
+  
+  componentDidMount = () => {
+    this.getUsers()
+  }
 
-  getUsers = () => {}
+  getUsers = () => {
+    let response
+    fetch("https://api.myjson.com/bins/cm76u")
+      .then(function (resp) { return resp.json(); })
+      .then(function(data) { response = data.users; });
+    console.log(`USERS response: ${response}`)
+    this.setState({userTest: response})
+  }
 
   filterUsers = (_filteredUsers) => {
     this.setState({filteredUsers:_filteredUsers})
