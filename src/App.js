@@ -58,17 +58,17 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.state.filteredUsers)
     return (
       <div className="App">
         <AppHeader />
         <AppSidebar 
-          users={this.state.users}
-          filterUsers={this.filterUsers}
-          filteredUsers={this.state.filteredUsers}
+          users = {this.state.users}
+          filterUsers = {this.filterUsers}
+          filteredUsers = {this.state.filteredUsers}
         />
         <AppMap 
-          users={this.state.users}
+          users = {this.state.users}
+          filteredUsers = {this.state.filteredUsers}
         />
         <AppFooter />
 

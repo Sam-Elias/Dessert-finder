@@ -14,14 +14,11 @@ class AppSidebar extends Component {
   }
   componentDidUpdate = (prevProp, prevState) => {
     let filteredByDessert
-    console.log(`prop: ${prevProp} sidebar query: ${prevState.query}`)
     if (this.state.query !== prevState.query) {
       const match = new RegExp(escapeStringRegexp(this.state.query), 'i')
       filteredByDessert = this.props.users.filter((user) => match.test(user.dessert))
       this.props.filterUsers(filteredByDessert)
     } 
-    {console.log(filteredByDessert)}
-    {console.log(this.state.query)}
     }
 
   
