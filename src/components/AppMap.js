@@ -55,8 +55,11 @@ class AppMap extends Component {
   }
 
   add_listener = (marker) => {
-    console.log(marker)
-    marker.addListener('click', this.state.infowindow.open(this.state.map, event))
+    marker.addListener('click', this.openInfoWindow(marker))
+  }
+
+  openInfoWindow = (marker) => {
+    this.state.infowindow.open(this.state.map, marker)
   }
 
   makeInfoWindow = () => {
@@ -64,7 +67,7 @@ class AppMap extends Component {
     let infowindow = new window.google.maps.InfoWindow({
       content: cont
     })
-    return infowindow
+    this.setState({infowindow: infowindow})
   }
   /*makeInfoWindow = () => {
     let infowindow
