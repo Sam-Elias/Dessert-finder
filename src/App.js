@@ -9,7 +9,6 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-<<<<<<< HEAD
       allUsers: [{position: {lat: 34.402367, lng: -119.726738},
         name: "Sam Nakamoto",
         id: 0,
@@ -80,15 +79,12 @@ class App extends Component {
           updateQuery = {this.updateQuery}
           filterUsers = {this.filterUsers}
           allUsers = {this.state.allUsers}
-          filteredUsers = {this.state.filteredUsers}
           currentUsers = {this.state.filteredUsers.length === 0 ? this.state.allUsers : this.state.filteredUsers}
           handleClick = {this.handleClick}
-
         />
         <AppMap 
           currentUsers = {this.state.filteredUsers.length === 0 ? this.state.allUsers : this.state.filteredUsers}
           allUsers = {this.state.users}
-          filteredUsers = {this.state.filteredUsers}
           handleClick = {this.handleClick}
         />
         <AppFooter />
