@@ -5,40 +5,37 @@ class AppSidebar extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      query:""
     }
   }
  
-  updateQuery = (query) => {
-    this.setState({query: query.target.value.trim()})
-  }
-  componentDidUpdate = (prevProp, prevState) => {
+  componentDidUpdate = (prevProp) => {
     let filteredByDessert
-    if (this.state.query !== prevState.query) {
-      const match = new RegExp(escapeStringRegexp(this.state.query), 'i')
-      filteredByDessert = this.props.users.filter((user) => match.test(user.dessert))
+    if (this.props.query !== prevProp.query) {
+      const match = new RegExp(escapeStringRegexp(this.props.query), 'i')
+      console.log(prevProp.currentUsers)
+      filteredByDessert = this.props.allUsers.filter((user) => match.test(user.dessert))
+      console.log(filteredByDessert)
       this.props.filterUsers(filteredByDessert)
+      console.log('filteredByDessert')
     } 
-    }
+    console.log(prevProp.query)
+    console.log(this.props.query)
+  }
 
-  
   render() {
     
     return (
       <nav className="sidebar">
-        <input type="search" value={this.state.query} onChange={this.updateQuery} id="search" placeholder="Enter a dessert type"></input>
+        <input type="search" value={this.props.query} onChange={this.props.updateQuery} id="search" placeholder="Enter a dessert type"></input>
         <ul className="sidebar">
-          {this.state.query? 
-            this.props.filteredUsers.map((user) => 
-            <li key={user.id}>
+          {this.props.currentUsers.map((user) => 
+            <li 
+              key={user.id}
+              onClick={this.props.handleClick}
+            >
               {user.dessert}
             </li>
-            ) : 
-            this.props.users.map((user) => 
-            <li key={user.id}>
-              {user.dessert}
-            </li>
-            )
+            ) 
           }
         </ul>
     </nav>
