@@ -33,8 +33,21 @@ class AppMap extends Component {
     })
     this.setState({map : map})
     this.makeInfoWindow()
-    this.makeMarkers(map)
-    
+    this._makeMarkers(map)
+  }
+
+  _makeMarkers = (map) => {
+    let marker
+    let _markers = []
+      this.props.currentUsers.forEach(user => {
+        marker = new window.google.maps.Marker({
+        position: user.position,
+        map: map,
+        title: user.dessert})
+        _markers = [..._markers, marker]
+      })
+      this.setState({markers : _markers})
+      _markers.forEach(marker => this.add_listener(marker))
   }
 
   makeMarkers = (map) =>{
