@@ -4,9 +4,8 @@ class AppMap extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      map:{},
-      markers:[],
-      infowindow:{}
+      map: {},
+      infowindow: {} 
     }
   }
 
@@ -15,14 +14,14 @@ class AppMap extends Component {
   }
   
   componentDidUpdate = (prevProps, prevState) => {
-    if (prevProps.filteredUsers !== this.props.filteredUsers) {
+    if (prevProps.currentUsers !== this.props.currentUsers) {
       this.makeMarkers(this.state.map)
       this.setMarkers(null, prevState.markers)
     }
   }
   
   renderMap = () => {
-  loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyARW8_P5byg0dhnLlZkraFBi6X_PmMshQQ&v=3&callback=initMap")
+    loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyARW8_P5byg0dhnLlZkraFBi6X_PmMshQQ&v=3&callback=initMap")
     window.initMap = this.initMap
   }
 
@@ -33,68 +32,52 @@ class AppMap extends Component {
     })
     this.setState({map : map})
     this.makeInfoWindow()
-    this._makeMarkers(map)
+    this.makeMarkers(map)
   }
 
-  _makeMarkers = (map) => {
+  makeMarkers = (map) => {
     let marker
     let _markers = []
-      this.props.currentUsers.forEach(user => {
-        marker = new window.google.maps.Marker({
-        position: user.position,
-        map: map,
-        title: user.dessert})
-        _markers = [..._markers, marker]
-      })
-      this.setState({markers : _markers})
-      _markers.forEach(marker => this.add_listener(marker))
+    this.props.currentUsers.forEach(user => {
+      marker = new window.google.maps.Marker({
+      position: user.position,
+      map: map,
+      title: user.dessert})
+      _markers = [..._markers, marker]
+    })
+    //this.setState({markers : _markers})
+    _markers.forEach(marker => this.add_listener(marker))
+    this.props.postMarkers(_markers)
   }
-
-  makeMarkers = (map) =>{
-    let marker
-    if (this.props.filteredUsers.length === 0) {
-      this.props.users.forEach(user => {
-        marker = new window.google.maps.Marker({
-          position: user.position,
-          map: map,
-          title: user.dessert})
-        this.setState({markers: [...this.state.markers, marker]})
-      })
-      this.state.markers.forEach(marker => this.add_listener(marker))
-    } else {
-      let _markers = []
-      this.props.filteredUsers.forEach(user => {
-        marker = new window.google.maps.Marker({
-        position: user.position,
-        map: map,
-        title: user.dessert})
-        _markers = [..._markers, marker]
-      })
-      this.setState({markers : _markers})
-      _markers.forEach(marker => this.add_listener(marker))
-    }
-}
     
   setMarkers = (map, markers) => {
     markers.map( marker => {marker.setMap(map)})
+  }
+
+  add_listener = (marker) => {
+    console.log(marker)
+    marker.addListener('click', this.state.infowindow.open(this.state.map, event))
   }
 
   makeInfoWindow = () => {
     let cont = '<div id="content"> <h1>HITHERE!</h1> </div>'
     let infowindow = new window.google.maps.InfoWindow({
       content: cont
-    });
-    this.setState({infowindow: infowindow})
+    })
+    return infowindow
   }
-  add_listener = (marker) => {
-    console.log(marker)
-    marker.addListener('click', this.handleClick)
-  }
+  /*makeInfoWindow = () => {
+    let infowindow
+    let _infowindows
+    let cont = '<div id="content"> <h1>HITHERE!</h1> </div>'
+    this.props.currentUsers.forEach(user => {
+      infowindow = new window.google.maps.InfoWindow({
+      content: cont})
+      _infowindows = [..._infowindows, infowindow]
+    })
+    this.props.postInfoWindow(_infowindows)
+  }*/
 
-  handleClick = (marker) => {
-    console.log(`marker: ${marker} \n infowindow: ${this.state.infowindow}`)
-    this.state.infowindow.open(this.state.map, marker)
-  }
   render() {
    
     return (

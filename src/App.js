@@ -38,15 +38,20 @@ class App extends Component {
         id: 6,
         dessert: "Cupcakes"}],
       filteredUsers:[],
-      currentUsers:[],
+      currentUsers: [],
       usersHolder:[],
-      query:""
+      query:"",
+      currentMarkers: [],
+      currentInfoWindows: []
     }
   } 
 
   componentDidMount = () => {
     this.getUsers()
+    this.setState({currentUsers: this.state.allUsers})
   }
+
+  
 
   getUsers = () => {
     fetch("https://api.myjson.com/bins/cm76u")
@@ -66,6 +71,15 @@ class App extends Component {
 
   handleClick = (event) => {
     console.log(event)
+    //this.state.infowindow.open(this.state.map, event)
+  }
+
+  postMarkers = (markers) => {
+    this.setState({currentMarkers: markers})
+  }
+
+  postInfoWindow = (infowindows) => {
+    this.setState({currentInfoWindows: infowindows})
   }
 
   render() {
@@ -81,9 +95,13 @@ class App extends Component {
           handleClick = {this.handleClick}
         />
         <AppMap 
-          currentUsers = {this.state.filteredUsers.length === 0 ? this.state.allUsers : this.state.filteredUsers}
           allUsers = {this.state.users}
+          currentUsers = {this.state.filteredUsers.length === 0 ? this.state.allUsers : this.state.filteredUsers}
           handleClick = {this.handleClick}
+          postMarkers = {this.postMarkers}
+          markers = {this.currentMarkers}
+          postInfoWindows = {this.postInfoWindow}
+          infowindows = {this.currentInfowindows}
         />
         <AppFooter />
 
