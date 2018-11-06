@@ -12,14 +12,9 @@ class AppSidebar extends Component {
     let filteredByDessert
     if (this.props.query !== prevProp.query) {
       const match = new RegExp(escapeStringRegexp(this.props.query), 'i')
-      console.log(prevProp.currentUsers)
       filteredByDessert = this.props.allUsers.filter((user) => match.test(user.dessert))
-      console.log(filteredByDessert)
       this.props.filterUsers(filteredByDessert)
-      console.log('filteredByDessert')
     } 
-    console.log(prevProp.query)
-    console.log(this.props.query)
   }
 
   render() {

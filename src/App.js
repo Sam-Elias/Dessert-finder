@@ -55,7 +55,6 @@ class App extends Component {
   }
 
   filterUsers = (_filteredUsers) => {
-    console.log(`filtered users from App: ${this.state.filteredUsers } \nfilteredUsers from sidebar: ${_filteredUsers}` )
     this.setState({currentUsers:_filteredUsers})
     this.setState({filteredUsers:_filteredUsers})
     console.log(`filtered users from App: ${this.state.filteredUsers } \nfilteredUsers from sidebar: ${_filteredUsers}` )
@@ -63,7 +62,6 @@ class App extends Component {
 
   updateQuery = (query) => {
     this.setState({query: query.target.value.trim()})
-    console.log('updated')
   }
 
   handleClick = (event) => {
