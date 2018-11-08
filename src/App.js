@@ -42,20 +42,25 @@ class App extends Component {
       usersHolder:[],
       query:"",
       currentMap: {},
-      currentMarkers: [],
-      InfoWindows: []
+      markers: [],
+      InfoWindows: [],
+      inforWindowOpen:{}
     }
   } 
+
+  getUsers = () => {
+    fetch("https://api.myjson.com/bins/cm76u")
+      .then(resp => resp.json())
+      .then(data => {this.setState({usersHolder: data.users})})
+  }
 
   componentDidMount = () => {
     this.getUsers()
     this.setState({currentUsers: this.state.allUsers})
   }
 
-  getUsers = () => {
-    fetch("https://api.myjson.com/bins/cm76u")
-      .then(resp => resp.json())
-      .then(data => {this.setState({usersHolder: data.users})})
+  componentDidUpdate = (_, prevState) => {
+    //this.closeInfoWindow(prevState.inforWindowOpen)
   }
 
   filterUsers = (_filteredUsers) => {
@@ -67,9 +72,22 @@ class App extends Component {
     this.setState({query: query.target.value.trim()})
   }
 
-  handleClick = (event) => {
-    console.log(event.target)
-  }
+  handleClick = (clicked) => {
+    let listItemValue
+    let marker
+    if (clicked.target) {
+      listItemValue = clicked
+      const matchedMarker = this.state.markers
+        .find(marker => marker.title === listItemValue.target.innerHTML)
+      const matchedInfoWindow = this.state.InfoWindows
+        .find(infowindow => infowindow.content.includes(matchedMarker.title))
+      this.openInfoWindow(matchedMarker, matchedInfoWindow)
+    } else {
+      marker = clicked
+      const matchedInfoWindow = this.state.InfoWindows
+        .find(infowindow => infowindow.content.includes(marker.title))
+      this.openInfoWindow(marker, matchedInfoWindow)
+    }}
 
   initMap = () => {
     const map = new window.google.maps.Map(document.getElementById('map'), {
@@ -77,8 +95,8 @@ class App extends Component {
       zoom: 13
     })
     this.setState({map : map})
-    this.makeInfoWindows()
     this.makeMarkers(map)
+    this.makeInfoWindows(this.state.markers)
   }
 
   makeMarkers = (map) => {
@@ -100,45 +118,30 @@ class App extends Component {
     markers.map( marker => marker.setMap(map))
   }
 
-  handleMarker = (marker) => {
-    this.closeInfoWindow()
-    marker.getAnimation() !== null ? marker.setAnimation(null) : marker.setAnimation(window.google.maps.Animation.BOUNCE)
-    let cont = `<div id="content"> <h1>${marker.title}</h1> </div>`
-    let infowindow = new window.google.maps.InfoWindow({
-      content: cont
-    })
-    infowindow.open(this.state.map, marker)
-  }
-
   add_listener = (marker) => {
-    marker.addListener('click', () => {this.handleMarker(marker)})
+    marker.addListener('click', () => {this.handleClick(marker)})
   }
 
-  makeInfoWindows = () => {
-    let cont = `<div id="content"> <h1>Hi There</h1> </div>`
+  makeInfoWindows = (markers) => {
     let infowindow
     let _infowindows = []
-    this.state.currentUsers.forEach(user => {
+    markers.forEach(marker => {
       infowindow = new window.google.maps.InfoWindow({
-        content: cont
+        content: `<div id="content"> <h1>${marker.title}</h1> </div>`
       })
       _infowindows = [..._infowindows, infowindow]
     })
     this.setState({InfoWindows : _infowindows})
   }
 
-  openInfoWindow = (marker) => {
-    let cont = `<div id="content"> <h1>${marker.title}</h1> </div>`
-    let infowindow = new window.google.maps.InfoWindow({
-      content: cont
-    })
-    infowindow.open(this.state.map, marker)
-    this.handleClick(marker)
+  openInfoWindow = (marker, infoWindow) => {
+    infoWindow.open(this.state.map, marker)
+    this.setState({infoWindowOpen: infoWindow})
   }
 
-  closeInfoWindow = () => {
-    this.state.infowindow.open(this.state.map, null)
-  }
+  //closeInfoWindow = (infowindow) => {
+  //  infowindow.close()
+  //}
 
   render() {
     return (
@@ -159,6 +162,9 @@ class App extends Component {
           markers = {this.state.markers}
           makeMarkers = {this.makeMarkers}
           setMarkers = {this.setMarkers}
+          infoWindows = {this.state.InfoWindows}
+          makeInfoWindows = {this.makeInfoWindows}
+          closeInfoWindow = {this.state.closeInfoWindow}
         />
         <AppFooter />
 

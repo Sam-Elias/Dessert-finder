@@ -14,8 +14,10 @@ class AppMap extends Component {
   
   componentDidUpdate = (prevProps) => {
     if (prevProps.currentUsers !== this.props.currentUsers) {
+      
       this.props.makeMarkers(this.props.map)
       this.props.setMarkers(null, prevProps.markers)
+      this.props.makeInfoWindows(this.props.markers)
     }
   }
   
