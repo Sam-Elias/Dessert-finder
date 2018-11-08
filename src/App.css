@@ -1,4 +1,7 @@
-.App {
+body {
+  margin: 0
+}
+#app {
   box-sizing: border-box;
   font-family: Arial, Helvetica, sans-serif;
   display: grid;
@@ -21,6 +24,14 @@
   grid-area: header;
 }
 
+#infobar {
+  display: none;
+  grid-area: sidebar;
+  background-color: #130d06;
+  color: #EEF5F3;
+  /*transition: all 3s;*/
+}
+
 .sidebar {
   background-color: #130d06;
   grid-area: sidebar;
@@ -36,6 +47,12 @@
 .sidebar li {
   text-align: center;
   padding: 15px;
+}
+
+.selected_li {
+  text-align: center;
+  padding: 15px;
+  background-color: #1f150a
 }
 
 .sidebar input {

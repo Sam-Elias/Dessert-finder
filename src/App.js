@@ -3,6 +3,7 @@ import './App.css';
 import AppHeader from './components/AppHeader';
 import AppFooter from './components/AppFooter';
 import AppSidebar from './components/AppSidebar';
+import AppInfobar from './components/AppInfobar'
 import AppMap from './components/AppMap';
 
 class App extends Component {
@@ -43,8 +44,9 @@ class App extends Component {
       query:"",
       currentMap: {},
       markers: [],
-      InfoWindows: [],
-      inforWindowOpen:{}
+      infoWindows: [],
+      inforWindowOpen:{},
+      showInfobar: false
     }
   } 
 
@@ -60,8 +62,12 @@ class App extends Component {
   }
 
   componentDidUpdate = (_, prevState) => {
-    //this.closeInfoWindow(prevState.inforWindowOpen)
-  }
+    if (this.state.showInfobar ===true) {
+      document.getElementById("infobar").style.display = "block"
+      const app = document.getElementById("app")
+      app.style.setProperty('grid-template-columns','400px 1fr')
+      //document.getElementById("app").style.grid-template-columns = "400px 1fr"
+  }}
 
   filterUsers = (_filteredUsers) => {
     this.setState({currentUsers:_filteredUsers})
@@ -73,20 +79,24 @@ class App extends Component {
   }
 
   handleClick = (clicked) => {
-    let listItemValue
+    console.log(clicked)
+    let liValue
     let marker
     if (clicked.target) {
-      listItemValue = clicked
+      liValue = clicked
       const matchedMarker = this.state.markers
-        .find(marker => marker.title === listItemValue.target.innerHTML)
-      const matchedInfoWindow = this.state.InfoWindows
+        .find(marker => marker.title === liValue.target.innerHTML)
+      const matchedInfoWindow = this.state.infoWindows
         .find(infowindow => infowindow.content.includes(matchedMarker.title))
-      this.openInfoWindow(matchedMarker, matchedInfoWindow)
+      const matchedUser = this.state.currentUsers
+        .find(user => user.dessert === liValue.target.innerHTML)
+      this.showInfoWindow(matchedMarker, matchedInfoWindow)
+      this.setState({showInfobar: true})
     } else {
       marker = clicked
-      const matchedInfoWindow = this.state.InfoWindows
+      const matchedInfoWindow = this.state.infoWindows
         .find(infowindow => infowindow.content.includes(marker.title))
-      this.openInfoWindow(marker, matchedInfoWindow)
+      this.showInfoWindow(marker, matchedInfoWindow)
     }}
 
   initMap = () => {
@@ -131,12 +141,16 @@ class App extends Component {
       })
       _infowindows = [..._infowindows, infowindow]
     })
-    this.setState({InfoWindows : _infowindows})
+    this.setState({infoWindows : _infowindows})
   }
 
-  openInfoWindow = (marker, infoWindow) => {
+  showInfoWindow = (marker, infoWindow) => {
     infoWindow.open(this.state.map, marker)
     this.setState({infoWindowOpen: infoWindow})
+  }
+
+  showInfobar = () => {
+    document.getElementsByClassName("infobar").style.display = "block"
   }
 
   //closeInfoWindow = (infowindow) => {
@@ -145,7 +159,7 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
+      <div id="app">
         <AppHeader />
         <AppSidebar
           query = {this.state.query}
@@ -154,6 +168,8 @@ class App extends Component {
           currentUsers = {this.state.currentUsers}
           filterUsers = {this.filterUsers}
           handleClick = {this.handleClick}
+        />
+        <AppInfobar
         />
         <AppMap 
           currentUsers = {this.state.filteredUsers.length === 0 ? this.state.allUsers : this.state.filteredUsers}

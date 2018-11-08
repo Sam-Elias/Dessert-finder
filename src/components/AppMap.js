@@ -14,9 +14,8 @@ class AppMap extends Component {
   
   componentDidUpdate = (prevProps) => {
     if (prevProps.currentUsers !== this.props.currentUsers) {
-      
-      this.props.makeMarkers(this.props.map)
       this.props.setMarkers(null, prevProps.markers)
+      this.props.makeMarkers(this.props.map)
       this.props.makeInfoWindows(this.props.markers)
     }
   }
@@ -30,7 +29,7 @@ class AppMap extends Component {
    
     return (
       <main className="mapContainer">
-        <div id="map">LOADING</div>
+        <div role="application" aria-label="google maps" id="map">LOADING</div>
       </main>
       
     )

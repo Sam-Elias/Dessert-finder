@@ -20,7 +20,7 @@ class AppSidebar extends Component {
   render() {
     
     return (
-      <nav className="sidebar">
+      <section role="search and list" className="sidebar">
         <input type="search" value={this.props.query} onChange={this.props.updateQuery} id="search" placeholder="Enter a dessert type"></input>
         <ul className="sidebar">
           {this.props.currentUsers.map((user) => 
@@ -33,7 +33,7 @@ class AppSidebar extends Component {
             ) 
           }
         </ul>
-    </nav>
+    </section>
     )
   }
 }
