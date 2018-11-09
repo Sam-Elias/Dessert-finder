@@ -9,12 +9,12 @@ class AppSidebar extends Component {
   }
  
   componentDidUpdate = (prevProp) => {
-    let filteredByDessert
+   /* let filteredByDessert
     if (this.props.query !== prevProp.query) {
       const match = new RegExp(escapeStringRegexp(this.props.query), 'i')
       filteredByDessert = this.props.allUsers.filter((user) => match.test(user.dessert))
       this.props.filterUsers(filteredByDessert)
-    } 
+    }*/ 
   }
 
   render() {

@@ -5,6 +5,7 @@ import AppFooter from './components/AppFooter';
 import AppSidebar from './components/AppSidebar';
 import AppInfobar from './components/AppInfobar'
 import AppMap from './components/AppMap';
+import escapeStringRegexp from 'escape-string-regexp'
 
 class App extends Component {
   constructor(props) {
@@ -115,15 +116,19 @@ class App extends Component {
     this.setState({infoWindows : _infowindows})
   }*/
   componentDidUpdate = (_, prevState) => {
-    console.log("update")
-    this.state.showInfobar && this.showInfobar()
+    (this.state.query !== prevState.query) &&
+      this.filterUsers()
+    this.state.showInfobar && 
+      this.showInfobar()
     prevState.infoWindowOpen && 
-    (this.state.infoWindowOpen !== prevState.infoWindowOpen) && 
-    this.closeInfoWindow(prevState.infoWindowOpen)
+      (this.state.infoWindowOpen !== prevState.infoWindowOpen) && 
+        this.closeInfoWindow(prevState.infoWindowOpen)
   }
 
-  filterUsers = (filteredUsers) => {
-    this.setState({currentUsers:filteredUsers})
+  filterUsers = () => {
+    const match = new RegExp(escapeStringRegexp(this.state.query), 'i')
+    let filteredByDessert = this.state.allUsers.filter((user) => match.test(user.dessert))
+    this.setState({currentUsers:filteredByDessert})
     //this.setState({filteredUsers:_filteredUsers})
   }
 
