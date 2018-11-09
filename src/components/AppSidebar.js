@@ -5,7 +5,7 @@ class AppSidebar extends Component {
   render() {
     return (
       <section role="search" className="sidebar">
-        <input type="search" value={this.props.query} onChange={this.props.updateQuery} id="search" placeholder="Enter a dessert type"></input>
+        <input type="search" value={this.props.query} onChange={this.props.bindQuery} id="search" placeholder="Enter a dessert type"></input>
         <ul className="sidebar">
           {this.props.currentUsers.map((user) => 
             <li 
