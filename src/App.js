@@ -14,7 +14,6 @@ class App extends Component {
       allUsers:[],
       currentUsers: [],
       selectedUser:{},
-      map: {},
       markers: [],
       query:"",
       infoWindowOpen: false,
@@ -69,7 +68,7 @@ class App extends Component {
     console.log('infowindows from makemarkers: ')
     _markers.forEach(marker => console.log(marker.infowindow))
     console.log('makeMarkers will set the state of map, marker and infowindows')
-    this.setState({map: map, markers: _markers})
+    this.setState({markers: _markers})
   }
 
   componentDidUpdate = (_, prevState) => {
@@ -77,27 +76,7 @@ class App extends Component {
     if ((this.state.allUsers.length >= 0) && (prevState.currentUsers !== this.state.currentUsers)) 
       {this.loadMap()} else 
         {console.log('The component updated wihtout loading a new map')}
-
-   // (this.state.query !== prevState.query) && this.filterUsers()
-    //this.state.showInfobar && this.showInfobar()
-
-    //prevState.infoWindowOpen && this.closeInfoWindow(prevState.infoWindowOpen)
     console.log(prevState.infoWindowOpen)
-    //(prevState.infoWindowOpen && console.log('windowopen')) 
-
-     // (this.state.infoWindowOpen !== prevState.infoWindowOpen)
-      //&& this.closeInfoWindow(prevState.infoWindowOpen)
-    
-    //this.state.firstFilter && this.updateMarkers(prevState.markers)
-    /*
-    if (this.state.query !== prevState.query) {
-      this.filterUsers()
-    } else if (this.state.showInfobar) {
-      this.showInfobar() 
-    } else if (prevState.infoWindowOpen && (this.state.infoWindowOpen !== prevState.infoWindowOpen)) {
-      this.closeInfoWindow(prevState.infoWindowOpen)
-    }
-    */
   }
 
   eraseMarkers = (markers) => {
@@ -105,25 +84,6 @@ class App extends Component {
     //this.renderMap()
     console.log('erasedMarkers')
   } 
-/*
- 
-  queryCompare = (prevState) => {
-    (this.state.query !== prevState.query) && this.filterUsers()
-  }
-  handleInfobar = () => {
-    this.state.showInfobar && this.showInfobar()
-  }
-  */
-
-  /*
-  filterUsers = () => {
-    const match = new RegExp(escapeStringRegexp(this.state.query), 'i')
-    let filteredByDessert = this.state.allUsers.filter((user) => match.test(user.dessert))
-    this.eraseMarkers(this.state.markers)
-    this.setState({currentUsers: filteredByDessert, firstFilter: true})
-
-    console.log('filterUsers')
-  }*/
 
   filterUsers = (query) => {
     const match = new RegExp(escapeStringRegexp(this.state.query), 'i')
@@ -143,19 +103,25 @@ class App extends Component {
       liValue = clicked
       const matchedMarker = this.state.markers
         .find(marker => marker.title === liValue.target.innerHTML)
+      const matchedUser = this.state.currentUsers
+        .find(user => user.dessert === liValue.target.innerHTML)
       this.showInfoWindow(matchedMarker)
       this.showInfobar()
       //start animation and stop it in 3.5 seconds
       matchedMarker.setAnimation(window.google.maps.Animation.BOUNCE)
-      setTimeout(()=>marker.setAnimation(null) ,3500)
+      marker && setTimeout(()=>marker.setAnimation(null) ,3500)
+      this.setState({selectedUser: matchedUser})
     } else {
       console.log('markerwasClicked')
       marker = clicked
+      const matchedUser = this.state.currentUsers
+        .find(user => user.dessert === marker.title)
       this.showInfoWindow(marker)
       this.showInfobar()
       //start animation and stop it in 3.5 seconds
-      marker.setAnimation(window.google.maps.Animation.BOUNCE)
+      marker && marker.setAnimation(window.google.maps.Animation.BOUNCE)
       setTimeout(()=>marker.setAnimation(null) ,3500)
+      this.setState({selectedUser: matchedUser})
     }}
 
   setMarkers = (map, markers) => {
@@ -192,8 +158,6 @@ class App extends Component {
     this.setState({showInfobar: false})
     console.log('hideInfobar')
   }
-
-
 
   render() {
     return (
