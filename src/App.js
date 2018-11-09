@@ -11,45 +11,16 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      /*usersHolder: [{position: {lat: 34.402367, lng: -119.726738},
-        name: "Sam Nakamoto",
-        id: 0,
-        dessert: "Apple Pie"},
-        {position: {lat: 34.404507, lng: -119.705515},
-        name: "Joe Buterin",
-        id: 1,
-        dessert: "Peach Cobbler"},
-        {position: {lat: 34.414019, lng: -119.727126},
-        name: "Katie Lovelace",
-        id: 2,
-        dessert: "Cheesecake"},
-        {position: {lat: 34.433996, lng: -119.711859},
-        name: "Adam Smith",
-        id: 3,
-        dessert: "Tiramisu"},
-        {position: {lat: 34.439817, lng: -119.688069},
-        name: "John Doe",
-        id: 4,
-        dessert: "Bread Pudding"},
-        {position: {lat: 34.442228, lng: -119.693895},
-        name: "Shawn Fanning",
-        id: 5,
-        dessert: "Chocolate Fudge"},
-        {position: {lat: 34.420138, lng: -119.734574},
-        name: "Robin Chase",
-        id: 6,
-        dessert: "Cupcakes"}],*/
-      //filteredUsers:[],
       currentUsers: [],
       allUsers:[],
       selectedUser:{},
-      //map:[],
       query:"",
       markers: [],
       infoWindows: [],
       markerBouncing: false,
       infoWindowOpen: false,
-      showInfobar: false
+      showInfobar: false,
+      firstFilter: false
     }
   }
 
@@ -94,23 +65,26 @@ class App extends Component {
       _infowindows = [..._infowindows, infowindow]
       this.add_listener(marker)
     })
-    this.setState({markers : _markers, infoWindows: _infowindows})
+    this.setState({markers: _markers, infoWindows: _infowindows})
   }
 
   componentDidUpdate = (_, prevState) => {
-    (this.state.query !== prevState.query) &&
+    console.log(1)
+    if (this.state.firstFilter) {
+      this.setMarkers(null, prevState.markers)
+    } else if (this.state.query !== prevState.query) {
       this.filterUsers()
-    this.state.showInfobar && 
-      this.showInfobar()
-    prevState.infoWindowOpen && 
-      (this.state.infoWindowOpen !== prevState.infoWindowOpen) && 
-        this.closeInfoWindow(prevState.infoWindowOpen)
+    } else if (this.state.showInfobar) {
+      this.showInfobar() 
+    } else if (prevState.infoWindowOpen && (this.state.infoWindowOpen !== prevState.infoWindowOpen)) {
+      this.closeInfoWindow(prevState.infoWindowOpen)
+    }
   }
 
   filterUsers = () => {
     const match = new RegExp(escapeStringRegexp(this.state.query), 'i')
     let filteredByDessert = this.state.allUsers.filter((user) => match.test(user.dessert))
-    this.setState({currentUsers:filteredByDessert})
+    this.setState({currentUsers: filteredByDessert, firstFilter: true})
   }
 
   updateQuery = (query) => {
@@ -118,7 +92,6 @@ class App extends Component {
   }
 
   handleClick = (clicked) => {
-    console.log(clicked)
     this.state.markerBouncing && this.state.markerBouncing.setAnimation(null)
     let liValue
     let marker
@@ -170,7 +143,6 @@ class App extends Component {
   }
 
   hideInfobar = () => {
-    console.log('hide')
     this.state.markerBouncing && this.state.markerBouncing.setAnimation(null)
     document.getElementById("infobar").style.display = "none"
     const app = document.getElementById("app")
@@ -191,6 +163,7 @@ class App extends Component {
           updateQuery = {this.updateQuery}
           currentUsers = {this.state.currentUsers}
           handleClick = {this.handleClick}
+          setMarkers = {this.setMarkers}
         />
         <AppInfobar
           hideInfobar = {this.hideInfobar}
