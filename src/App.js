@@ -16,9 +16,7 @@ class App extends Component {
       selectedUser:{},
       map: {},
       markers: [],
-      infoWindows: [],
       query:"",
-      markerBouncing: false,
       infoWindowOpen: false,
       showInfobar: false,
       firstFilter: false
@@ -33,8 +31,6 @@ class App extends Component {
     fetch("https://api.myjson.com/bins/cm76u")
       .then(resp => resp.json())
       .then(data => {this.setState({allUsers: data.users, currentUsers: data.users})})
-      .then(data => console.log(data))
-      //.then((this.state.currentUsers.length >= 0) && this.loadMap())
   }
 
   loadMap = () => {
@@ -48,42 +44,44 @@ class App extends Component {
       center: {lat: 34.420830, lng: -119.698189},
       zoom: 13
     })
-    console.log("map is:")
+    console.log("renderMap will call makeMrkers")
     console.log(this.state.currentUsers.length >= 0)
      this.makeMarkers(map)
-    console.log("renderMap")
   }
 
   makeMarkers = (map) => {
     let _markers = []
-    let _infowindows = []
     this.state.currentUsers.forEach(user => {
       let marker = new window.google.maps.Marker({
       position: user.position,
       map: map,
       animation: window.google.maps.Animation.DROP,
+      infowindow:{},
       title: user.dessert,
-      getAnimation: null})
-      let infowindow = new window.google.maps.InfoWindow({
+      getAnimation: null
+    })
+      marker.infowindow = new window.google.maps.InfoWindow({
         content: `<div><h1 id="content">${marker.title}</h1><div>`
       })
       _markers = [..._markers, marker]
-      _infowindows = [..._infowindows, infowindow]
-      console.log('markers are:')
-      console.log(_markers)
       this.add_listener(marker)
     })
-    console.log(_markers)
-    this.setState({map: map, markers: _markers, infoWindows: _infowindows})
-    console.log("makeMarkersend")
+    console.log('infowindows from makemarkers: ')
+    _markers.forEach(marker => console.log(marker.infowindow))
+    console.log('makeMarkers will set the state of map, marker and infowindows')
+    this.setState({map: map, markers: _markers})
   }
 
   componentDidUpdate = (_, prevState) => {
-    if (this.state.currentUsers.length >= 0) {console.log(this.state.currentUsers)} else {console.log('nope')}
-    //if (this.state.currentUsers.length >= 0) {this.loadMap()}
-    //console.log('didUpdate')
-    (this.state.query !== prevState.query) && this.filterUsers()
-    this.state.showInfobar && this.showInfobar()
+    //check to see if allUsers loaded from API and if currentUsers change(to prevent recursive loop)
+    if ((this.state.allUsers.length >= 0) && (prevState.currentUsers !== this.state.currentUsers)) 
+      {this.loadMap()} else 
+        {console.log('The component updated wihtout loading a new map')}
+
+   // (this.state.query !== prevState.query) && this.filterUsers()
+    //this.state.showInfobar && this.showInfobar()
+
+    //prevState.infoWindowOpen && this.closeInfoWindow(prevState.infoWindowOpen)
     console.log(prevState.infoWindowOpen)
     //(prevState.infoWindowOpen && console.log('windowopen')) 
 
@@ -117,7 +115,7 @@ class App extends Component {
   }
   */
 
-
+  /*
   filterUsers = () => {
     const match = new RegExp(escapeStringRegexp(this.state.query), 'i')
     let filteredByDessert = this.state.allUsers.filter((user) => match.test(user.dessert))
@@ -125,46 +123,39 @@ class App extends Component {
     this.setState({currentUsers: filteredByDessert, firstFilter: true})
 
     console.log('filterUsers')
-  }
+  }*/
 
-  bindQuery = (query) => {
-    this.setState({query: query.target.value.trim()})
+  filterUsers = (query) => {
+    const match = new RegExp(escapeStringRegexp(this.state.query), 'i')
+    let filteredByDessert = this.state.allUsers.filter((user) => match.test(user.dessert))
+    this.setState({query: query.target.value.trim(), currentUsers: filteredByDessert})
+    //this.filterUsers()
     console.log('bindQuery')
   }
 
   handleClick = (clicked) => {
-    this.state.markerBouncing && this.state.markerBouncing.setAnimation(null)
+    this.state.markers.forEach( marker => this.closeInfoWindow(marker.infowindow))
     let liValue
     let marker
     console.log('handleClick')
     if (clicked.target) {
+      console.log('liwasClicked')
       liValue = clicked
       const matchedMarker = this.state.markers
         .find(marker => marker.title === liValue.target.innerHTML)
-      const matchedInfoWindow = this.state.infoWindows
-        .find(infowindow => infowindow.content.includes(matchedMarker.title))
-      const matchedUser = this.state.currentUsers
-        .find(user => user.dessert === liValue.target.innerHTML)
-      this.showInfoWindow(matchedMarker, matchedInfoWindow)
-      this.setState({
-        showInfobar: true, 
-        markerBouncing: matchedMarker, 
-        selectedUser: matchedUser})
+      this.showInfoWindow(matchedMarker)
+      this.showInfobar()
+      //start animation and stop it in 3.5 seconds
       matchedMarker.setAnimation(window.google.maps.Animation.BOUNCE)
-      console.log('liwasClicked')
+      setTimeout(()=>marker.setAnimation(null) ,3500)
     } else {
-      marker = clicked
-      const matchedInfoWindow = this.state.infoWindows
-        .find(infowindow => infowindow.content.includes(marker.title))
-      const matchedUser = this.state.currentUsers
-        .find(user => user.dessert === marker.title)
-      this.showInfoWindow(marker, matchedInfoWindow)
-      this.setState({
-        showInfobar: true, 
-        markerBouncing: marker,
-        selectedUser: matchedUser})
-      marker.setAnimation(window.google.maps.Animation.BOUNCE)
       console.log('markerwasClicked')
+      marker = clicked
+      this.showInfoWindow(marker)
+      this.showInfobar()
+      //start animation and stop it in 3.5 seconds
+      marker.setAnimation(window.google.maps.Animation.BOUNCE)
+      setTimeout(()=>marker.setAnimation(null) ,3500)
     }}
 
   setMarkers = (map, markers) => {
@@ -177,10 +168,14 @@ class App extends Component {
     console.log('addListeners')
   }
 
-  showInfoWindow = (marker, infoWindow) => {
-    infoWindow.open(this.state.map, marker)
-    this.setState({infoWindowOpen: infoWindow})
+  showInfoWindow = (marker) => {
+    marker.infowindow.open(this.state.map, marker)
     console.log('showInfoWindow')
+  }
+
+  closeInfoWindow = (infowindow) => {
+    infowindow.close()
+    console.log('closeInfoWindow')
   }
 
   showInfobar = () => {
@@ -191,7 +186,6 @@ class App extends Component {
   }
 
   hideInfobar = () => {
-    this.state.markerBouncing && this.state.markerBouncing.setAnimation(null)
     document.getElementById("infobar").style.display = "none"
     const app = document.getElementById("app")
       app.style.setProperty('grid-template-columns','200px 1fr')
@@ -199,10 +193,7 @@ class App extends Component {
     console.log('hideInfobar')
   }
 
-  closeInfoWindow = (infowindow) => {
-    infowindow.close()
-    console.log('closeInfoWindow')
-  }
+
 
   render() {
     return (
@@ -210,10 +201,9 @@ class App extends Component {
         <AppHeader />
         <AppSidebar
           query = {this.state.query}
-          bindQuery = {this.bindQuery}
+          filterUsers = {this.filterUsers}
           currentUsers = {this.state.currentUsers}
           handleClick = {this.handleClick}
-          setMarkers = {this.setMarkers}
         />
         <AppInfobar
           hideInfobar = {this.hideInfobar}
