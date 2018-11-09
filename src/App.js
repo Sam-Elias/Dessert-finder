@@ -11,7 +11,7 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      usersHolder: [{position: {lat: 34.402367, lng: -119.726738},
+      /*usersHolder: [{position: {lat: 34.402367, lng: -119.726738},
         name: "Sam Nakamoto",
         id: 0,
         dessert: "Apple Pie"},
@@ -38,7 +38,7 @@ class App extends Component {
         {position: {lat: 34.420138, lng: -119.734574},
         name: "Robin Chase",
         id: 6,
-        dessert: "Cupcakes"}],
+        dessert: "Cupcakes"}],*/
       //filteredUsers:[],
       currentUsers: [],
       allUsers:[],
@@ -55,8 +55,6 @@ class App extends Component {
 
   componentDidMount = () => {
     this.getUsers()
-    //this.renderMap()
-    //this.setState({currentUsers: this.state.allUsers})
   }
 
   getUsers = () => {
@@ -76,13 +74,10 @@ class App extends Component {
       center: {lat: 34.420830, lng: -119.698189},
       zoom: 13
     })
-    //this.setState({map : map})
     this.makeMarkers(map)
-    //this.makeInfoWindows(this.state.markers)
   }
 
   makeMarkers = (map) => {
-    //let marker
     let _markers = []
     let _infowindows = []
     this.state.currentUsers.forEach(user => {
@@ -100,21 +95,8 @@ class App extends Component {
       this.add_listener(marker)
     })
     this.setState({markers : _markers, infoWindows: _infowindows})
-
-    //_markers.forEach(marker => this.add_listener(marker))
   }
-/*
-  makeInfoWindows = (markers) => {
-    let infowindow
-    let _infowindows = []
-    markers.forEach(marker => {
-      let infowindow = new window.google.maps.InfoWindow({
-        content: `<div id="content">${marker.title}</div>`
-      })
-      _infowindows = [..._infowindows, infowindow]
-    })
-    this.setState({infoWindows : _infowindows})
-  }*/
+
   componentDidUpdate = (_, prevState) => {
     (this.state.query !== prevState.query) &&
       this.filterUsers()
@@ -129,7 +111,6 @@ class App extends Component {
     const match = new RegExp(escapeStringRegexp(this.state.query), 'i')
     let filteredByDessert = this.state.allUsers.filter((user) => match.test(user.dessert))
     this.setState({currentUsers:filteredByDessert})
-    //this.setState({filteredUsers:_filteredUsers})
   }
 
   updateQuery = (query) => {
@@ -169,10 +150,6 @@ class App extends Component {
       marker.setAnimation(window.google.maps.Animation.BOUNCE)
     }}
 
-  
-
-
-
   setMarkers = (map, markers) => {
     markers.map( marker => marker.setMap(map))
   }
@@ -180,19 +157,7 @@ class App extends Component {
   add_listener = (marker) => {
     marker.addListener('click', () => {this.handleClick(marker)})
   }
-/*
-  makeInfoWindows = (markers) => {
-    let infowindow
-    let _infowindows = []
-    markers.forEach(marker => {
-      infowindow = new window.google.maps.InfoWindow({
-        content: `<div id="content"> <h1>${marker.title}</h1> </div>`
-      })
-      _infowindows = [..._infowindows, infowindow]
-    })
-    this.setState({infoWindows : _infowindows})
-  }
-*/
+
   showInfoWindow = (marker, infoWindow) => {
     infoWindow.open(this.state.map, marker)
     this.setState({infoWindowOpen: infoWindow})
@@ -215,7 +180,6 @@ class App extends Component {
 
   closeInfoWindow = (infowindow) => {
     infowindow.close()
-    console.log("closed")
   }
 
   render() {
@@ -225,9 +189,7 @@ class App extends Component {
         <AppSidebar
           query = {this.state.query}
           updateQuery = {this.updateQuery}
-          allUsers = {this.state.allUsers}
           currentUsers = {this.state.currentUsers}
-          filterUsers = {this.filterUsers}
           handleClick = {this.handleClick}
         />
         <AppInfobar
@@ -235,15 +197,6 @@ class App extends Component {
           selectedUser = {this.state.selectedUser}
         />
         <AppMap 
-          //currentUsers = {this.state.filteredUsers.length === 0 ? this.state.allUsers : this.state.filteredUsers}
-          //initMap = {this.initMap}
-          //map = {this.state.map}
-          //markers = {this.state.markers}
-          //makeMarkers = {this.makeMarkers}
-          //setMarkers = {this.setMarkers}
-          //infoWindows = {this.state.InfoWindows}
-          //makeInfoWindows = {this.makeInfoWindows}
-          //closeInfoWindow = {this.state.closeInfoWindow}
         />
         <AppFooter />
 
