@@ -38,11 +38,11 @@ class App extends Component {
         name: "Robin Chase",
         id: 6,
         dessert: "Cupcakes"}],
-      filteredUsers:[],
+      //filteredUsers:[],
       currentUsers: [],
       allUsers:[],
       selectedUser:{},
-      map:[],
+      //map:[],
       query:"",
       markers: [],
       infoWindows: [],
@@ -77,12 +77,13 @@ class App extends Component {
     })
     //this.setState({map : map})
     this.makeMarkers(map)
-    this.makeInfoWindows(this.state.markers)
+    //this.makeInfoWindows(this.state.markers)
   }
 
   makeMarkers = (map) => {
     //let marker
     let _markers = []
+    let _infowindows = []
     this.state.currentUsers.forEach(user => {
       let marker = new window.google.maps.Marker({
       position: user.position,
@@ -90,13 +91,29 @@ class App extends Component {
       animation: window.google.maps.Animation.DROP,
       title: user.dessert,
       getAnimation: null})
-      this.add_listener(marker)
+      let infowindow = new window.google.maps.InfoWindow({
+        content: `<div><h1 id="content">${marker.title}</h1><div>`
+      })
       _markers = [..._markers, marker]
+      _infowindows = [..._infowindows, infowindow]
+      this.add_listener(marker)
     })
-    this.setState({markers : _markers})
+    this.setState({markers : _markers, infoWindows: _infowindows})
+
     //_markers.forEach(marker => this.add_listener(marker))
   }
-
+/*
+  makeInfoWindows = (markers) => {
+    let infowindow
+    let _infowindows = []
+    markers.forEach(marker => {
+      let infowindow = new window.google.maps.InfoWindow({
+        content: `<div id="content">${marker.title}</div>`
+      })
+      _infowindows = [..._infowindows, infowindow]
+    })
+    this.setState({infoWindows : _infowindows})
+  }*/
   componentDidUpdate = (_, prevState) => {
     console.log("update")
     this.state.showInfobar && this.showInfobar()
@@ -105,9 +122,9 @@ class App extends Component {
     this.closeInfoWindow(prevState.infoWindowOpen)
   }
 
-  filterUsers = (_filteredUsers) => {
-    this.setState({currentUsers:_filteredUsers})
-    this.setState({filteredUsers:_filteredUsers})
+  filterUsers = (filteredUsers) => {
+    this.setState({currentUsers:filteredUsers})
+    //this.setState({filteredUsers:_filteredUsers})
   }
 
   updateQuery = (query) => {
@@ -158,7 +175,7 @@ class App extends Component {
   add_listener = (marker) => {
     marker.addListener('click', () => {this.handleClick(marker)})
   }
-
+/*
   makeInfoWindows = (markers) => {
     let infowindow
     let _infowindows = []
@@ -170,7 +187,7 @@ class App extends Component {
     })
     this.setState({infoWindows : _infowindows})
   }
-
+*/
   showInfoWindow = (marker, infoWindow) => {
     infoWindow.open(this.state.map, marker)
     this.setState({infoWindowOpen: infoWindow})
