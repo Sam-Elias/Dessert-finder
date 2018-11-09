@@ -32,6 +32,26 @@ body {
   /*transition: all 3s;*/
 }
 
+#infobar h1 {
+  text-align: center;
+}
+
+#infobar p {
+  padding: 30px;
+  text-align: center;
+}
+
+.infoBtn {
+  width: 100%;
+  height: 3rem;
+  font-size: 1rem;
+  background-color:  #083039;
+  color: #EEF5F3
+}
+button:hover  {
+  color: #130d06;
+  background-color: #EEF5F3;
+}
 .sidebar {
   background-color: #130d06;
   grid-area: sidebar;

@@ -41,11 +41,12 @@ class App extends Component {
       filteredUsers:[],
       currentUsers: [],
       usersHolder:[],
+      selectedUser:{},
       query:"",
-      currentMap: {},
       markers: [],
       infoWindows: [],
-      inforWindowOpen:{},
+      markerBouncing: false,
+      infoWindowOpen: false,
       showInfobar: false
     }
   } 
@@ -62,12 +63,12 @@ class App extends Component {
   }
 
   componentDidUpdate = (_, prevState) => {
-    if (this.state.showInfobar ===true) {
-      document.getElementById("infobar").style.display = "block"
-      const app = document.getElementById("app")
-      app.style.setProperty('grid-template-columns','400px 1fr')
-      //document.getElementById("app").style.grid-template-columns = "400px 1fr"
-  }}
+    console.log("update")
+    this.state.showInfobar && this.showInfobar()
+    prevState.infoWindowOpen && 
+    (this.state.infoWindowOpen !== prevState.infoWindowOpen) && 
+    this.closeInfoWindow(prevState.infoWindowOpen)
+  }
 
   filterUsers = (_filteredUsers) => {
     this.setState({currentUsers:_filteredUsers})
@@ -80,6 +81,7 @@ class App extends Component {
 
   handleClick = (clicked) => {
     console.log(clicked)
+    this.state.markerBouncing && this.state.markerBouncing.setAnimation(null)
     let liValue
     let marker
     if (clicked.target) {
@@ -91,12 +93,23 @@ class App extends Component {
       const matchedUser = this.state.currentUsers
         .find(user => user.dessert === liValue.target.innerHTML)
       this.showInfoWindow(matchedMarker, matchedInfoWindow)
-      this.setState({showInfobar: true})
+      this.setState({
+        showInfobar: true, 
+        markerBouncing: matchedMarker, 
+        selectedUser: matchedUser})
+      matchedMarker.setAnimation(window.google.maps.Animation.BOUNCE)
     } else {
       marker = clicked
       const matchedInfoWindow = this.state.infoWindows
         .find(infowindow => infowindow.content.includes(marker.title))
+      const matchedUser = this.state.currentUsers
+        .find(user => user.dessert === marker.title)
       this.showInfoWindow(marker, matchedInfoWindow)
+      this.setState({
+        showInfobar: true, 
+        markerBouncing: marker,
+        selectedUser: matchedUser})
+      marker.setAnimation(window.google.maps.Animation.BOUNCE)
     }}
 
   initMap = () => {
@@ -117,7 +130,8 @@ class App extends Component {
       position: user.position,
       map: map,
       animation: window.google.maps.Animation.DROP,
-      title: user.dessert})
+      title: user.dessert,
+      getAnimation: null})
       _markers = [..._markers, marker]
     })
     this.setState({markers : _markers})
@@ -150,12 +164,24 @@ class App extends Component {
   }
 
   showInfobar = () => {
-    document.getElementsByClassName("infobar").style.display = "block"
+    document.getElementById("infobar").style.display = "block"
+      const app = document.getElementById("app")
+      app.style.setProperty('grid-template-columns','400px 1fr')
   }
 
-  //closeInfoWindow = (infowindow) => {
-  //  infowindow.close()
-  //}
+  hideInfobar = () => {
+    console.log('hide')
+    this.state.markerBouncing && this.state.markerBouncing.setAnimation(null)
+    document.getElementById("infobar").style.display = "none"
+    const app = document.getElementById("app")
+      app.style.setProperty('grid-template-columns','200px 1fr')
+    this.setState({showInfobar: false})
+  }
+
+  closeInfoWindow = (infowindow) => {
+    infowindow.close()
+    console.log("closed")
+  }
 
   render() {
     return (
@@ -170,6 +196,8 @@ class App extends Component {
           handleClick = {this.handleClick}
         />
         <AppInfobar
+          hideInfobar = {this.hideInfobar}
+          selectedUser = {this.state.selectedUser}
         />
         <AppMap 
           currentUsers = {this.state.filteredUsers.length === 0 ? this.state.allUsers : this.state.filteredUsers}
