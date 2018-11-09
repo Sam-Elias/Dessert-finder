@@ -10,7 +10,7 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      allUsers: [{position: {lat: 34.402367, lng: -119.726738},
+      usersHolder: [{position: {lat: 34.402367, lng: -119.726738},
         name: "Sam Nakamoto",
         id: 0,
         dessert: "Apple Pie"},
@@ -40,8 +40,9 @@ class App extends Component {
         dessert: "Cupcakes"}],
       filteredUsers:[],
       currentUsers: [],
-      usersHolder:[],
+      allUsers:[],
       selectedUser:{},
+      map:[],
       query:"",
       markers: [],
       infoWindows: [],
@@ -49,17 +50,51 @@ class App extends Component {
       infoWindowOpen: false,
       showInfobar: false
     }
-  } 
-
-  getUsers = () => {
-    fetch("https://api.myjson.com/bins/cm76u")
-      .then(resp => resp.json())
-      .then(data => {this.setState({usersHolder: data.users})})
   }
 
   componentDidMount = () => {
     this.getUsers()
-    this.setState({currentUsers: this.state.allUsers})
+    //this.renderMap()
+    //this.setState({currentUsers: this.state.allUsers})
+  }
+
+  getUsers = () => {
+    fetch("https://api.myjson.com/bins/cm76u")
+      .then(resp => resp.json())
+      .then(data => {this.setState({allUsers: data.users, currentUsers: data.users})})
+      .then(this.loadMap())
+  }
+
+  loadMap = () => {
+    loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyARW8_P5byg0dhnLlZkraFBi6X_PmMshQQ&v=3&callback=renderMap")
+    window.renderMap = this.renderMap
+  }
+
+  renderMap = () => {
+    const map = new window.google.maps.Map(document.getElementById('map'), {
+      center: {lat: 34.420830, lng: -119.698189},
+      zoom: 13
+    })
+    //this.setState({map : map})
+    this.makeMarkers(map)
+    this.makeInfoWindows(this.state.markers)
+  }
+
+  makeMarkers = (map) => {
+    //let marker
+    let _markers = []
+    this.state.currentUsers.forEach(user => {
+      let marker = new window.google.maps.Marker({
+      position: user.position,
+      map: map,
+      animation: window.google.maps.Animation.DROP,
+      title: user.dessert,
+      getAnimation: null})
+      this.add_listener(marker)
+      _markers = [..._markers, marker]
+    })
+    this.setState({markers : _markers})
+    //_markers.forEach(marker => this.add_listener(marker))
   }
 
   componentDidUpdate = (_, prevState) => {
@@ -112,31 +147,9 @@ class App extends Component {
       marker.setAnimation(window.google.maps.Animation.BOUNCE)
     }}
 
-  initMap = () => {
-    const map = new window.google.maps.Map(document.getElementById('map'), {
-      center: {lat: 34.420830, lng: -119.698189},
-      zoom: 13
-    })
-    this.setState({map : map})
-    this.makeMarkers(map)
-    this.makeInfoWindows(this.state.markers)
-  }
+  
 
-  makeMarkers = (map) => {
-    let marker
-    let _markers = []
-    this.state.currentUsers.forEach(user => {
-      marker = new window.google.maps.Marker({
-      position: user.position,
-      map: map,
-      animation: window.google.maps.Animation.DROP,
-      title: user.dessert,
-      getAnimation: null})
-      _markers = [..._markers, marker]
-    })
-    this.setState({markers : _markers})
-    _markers.forEach(marker => this.add_listener(marker))
-  }
+
 
   setMarkers = (map, markers) => {
     markers.map( marker => marker.setMap(map))
@@ -200,15 +213,15 @@ class App extends Component {
           selectedUser = {this.state.selectedUser}
         />
         <AppMap 
-          currentUsers = {this.state.filteredUsers.length === 0 ? this.state.allUsers : this.state.filteredUsers}
-          initMap = {this.initMap}
-          map = {this.state.map}
-          markers = {this.state.markers}
-          makeMarkers = {this.makeMarkers}
-          setMarkers = {this.setMarkers}
-          infoWindows = {this.state.InfoWindows}
-          makeInfoWindows = {this.makeInfoWindows}
-          closeInfoWindow = {this.state.closeInfoWindow}
+          //currentUsers = {this.state.filteredUsers.length === 0 ? this.state.allUsers : this.state.filteredUsers}
+          //initMap = {this.initMap}
+          //map = {this.state.map}
+          //markers = {this.state.markers}
+          //makeMarkers = {this.makeMarkers}
+          //setMarkers = {this.setMarkers}
+          //infoWindows = {this.state.InfoWindows}
+          //makeInfoWindows = {this.makeInfoWindows}
+          //closeInfoWindow = {this.state.closeInfoWindow}
         />
         <AppFooter />
 
@@ -216,5 +229,12 @@ class App extends Component {
     );
   }
 }
-
+function loadScript(url) {
+  const index = window.document.getElementsByTagName("script")[0]
+  const script = window.document.createElement("script")
+  script.src = url
+  script.assync = true
+  script.defer = true
+  index.parentNode.insertBefore(script, index)
+}
 export default App;
