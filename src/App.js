@@ -29,13 +29,13 @@ class App extends Component {
   getUsers = () => {
     fetch("https://api.myjson.com/bins/cm76u")
       .then(resp => resp.json())
-      .then(data => {this.setState({allUsers: data.users, currentUsers: data.users})})
+      .then(data => {this.setState({allUsers: data.users, currentUsers: data.users}, this.loadMap())})
   }
 
   loadMap = () => {
     loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyARW8_P5byg0dhnLlZkraFBi6X_PmMshQQ&v=3&callback=renderMap")
     window.renderMap = this.renderMap
-    console.log("loadMap")
+    console.log('loadMap') 
   }
 
   renderMap = () => {
@@ -72,11 +72,7 @@ class App extends Component {
   }
 
   componentDidUpdate = (_, prevState) => {
-    //check to see if allUsers loaded from API and if currentUsers change(to prevent recursive loop)
-    if ((this.state.allUsers.length >= 0) && (prevState.currentUsers !== this.state.currentUsers)) 
-      {this.loadMap()} else 
-        {console.log('The component updated wihtout loading a new map')}
-    console.log(prevState.infoWindowOpen)
+    console.log('updated')
   }
 
   eraseMarkers = (markers) => {
@@ -86,10 +82,10 @@ class App extends Component {
   } 
 
   filterUsers = (query) => {
-    const match = new RegExp(escapeStringRegexp(this.state.query), 'i')
+    const match = new RegExp(escapeStringRegexp(query.target.value), 'i')
     let filteredByDessert = this.state.allUsers.filter((user) => match.test(user.dessert))
     this.setState({query: query.target.value.trim(), currentUsers: filteredByDessert})
-    //this.filterUsers()
+    //this.filterUsers()*/
     console.log('bindQuery')
   }
 
@@ -126,37 +122,31 @@ class App extends Component {
 
   setMarkers = (map, markers) => {
     markers.map( marker => marker.setMap(map))
-    console.log('setMarkers')
   }
 
   add_listener = (marker) => {
     marker.addListener('click', () => {this.handleClick(marker)})
-    console.log('addListeners')
   }
 
   showInfoWindow = (marker) => {
     marker.infowindow.open(this.state.map, marker)
-    console.log('showInfoWindow')
   }
 
   closeInfoWindow = (infowindow) => {
     infowindow.close()
-    console.log('closeInfoWindow')
   }
 
   showInfobar = () => {
-    document.getElementById("infobar").style.display = "block"
-    const app = document.getElementById("app")
+    document.getElementById("infobar").style.display = "block"  //grabs HTML element with id infobar and sets display to block
+    const app = document.getElementById("app")  //moves the grid template to having the sidebar with 400px width
     app.style.setProperty('grid-template-columns','400px 1fr')
-    console.log('showInfobar')
   }
 
   hideInfobar = () => {
-    document.getElementById("infobar").style.display = "none"
-    const app = document.getElementById("app")
+    document.getElementById("infobar").style.display = "none"  //grabs HTML element with id infobar and sets display to none
+    const app = document.getElementById("app")  //moves the grid template back to having the sidebar with 200px width
       app.style.setProperty('grid-template-columns','200px 1fr')
-    this.setState({showInfobar: false})
-    console.log('hideInfobar')
+    this.setState({showInfobar: false})  
   }
 
   render() {
