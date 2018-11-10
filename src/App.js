@@ -18,7 +18,6 @@ class App extends Component {
       query:"",
       infoWindowOpen: false,
       showInfobar: false,
-      firstFilter: false
     }
   }
 
@@ -29,13 +28,13 @@ class App extends Component {
   getUsers = () => {
     fetch("https://api.myjson.com/bins/cm76u")
       .then(resp => resp.json())
-      .then(data => {this.setState({allUsers: data.users, currentUsers: data.users}, this.loadMap())})
+      .then(data => {this.setState({allUsers: data.users, currentUsers: data.users}, this.loadMap())})  //sets the state when it receives the data from the promise, then it calls the loadMap function
+      .catch(error => {<div><h1>We got this problem :${error}</h1><p>Please reload your page</p></div>})
   }
 
   loadMap = () => {
     loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyARW8_P5byg0dhnLlZkraFBi6X_PmMshQQ&v=3&callback=renderMap")
-    window.renderMap = this.renderMap
-    console.log('loadMap') 
+    window.renderMap = this.renderMap  //sets the renderMap function google will look for on the DOM to the this renderMap
   }
 
   renderMap = () => {
@@ -43,9 +42,7 @@ class App extends Component {
       center: {lat: 34.420830, lng: -119.698189},
       zoom: 13
     })
-    console.log("renderMap will call makeMrkers")
-    console.log(this.state.currentUsers.length >= 0)
-     this.makeMarkers(map)
+    this.makeMarkers(map)
   }
 
   makeMarkers = (map) => {
@@ -65,68 +62,52 @@ class App extends Component {
       _markers = [..._markers, marker]
       this.add_listener(marker)
     })
-    console.log('infowindows from makemarkers: ')
-    _markers.forEach(marker => console.log(marker.infowindow))
-    console.log('makeMarkers will set the state of map, marker and infowindows')
     this.setState({markers: _markers})
   }
 
-  componentDidUpdate = (_, prevState) => {
-    console.log('updated')
-  }
-
-  eraseMarkers = (markers) => {
-    this.setMarkers(null, markers)
-    //this.renderMap()
-    console.log('erasedMarkers')
-  } 
-
   filterUsers = (query) => {
-    const match = new RegExp(escapeStringRegexp(query.target.value), 'i')
-    let filteredByDessert = this.state.allUsers.filter((user) => match.test(user.dessert))
-    this.setState({query: query.target.value.trim(), currentUsers: filteredByDessert})
-    //this.filterUsers()*/
-    console.log('bindQuery')
+    const match = new RegExp(escapeStringRegexp(query.target.value), 'i')  //create a regular expression instance with the query value, case insensitive
+    let filteredByDessert = this.state.allUsers.filter((user) => match.test(user.dessert))  //create an array of users.dessert that match the regular expression
+    this.setState({query: query.target.value.trim(), currentUsers: filteredByDessert})  //set the query state and update current users
   }
 
   handleClick = (clicked) => {
     this.state.markers.forEach( marker => this.closeInfoWindow(marker.infowindow))
     let liValue
     let marker
-    console.log('handleClick')
     if (clicked.target) {
-      console.log('liwasClicked')
       liValue = clicked
-      const matchedMarker = this.state.markers
+      const matchedMarker = this.state.markers  //loop through the markers array and matched with the li clicked
         .find(marker => marker.title === liValue.target.innerHTML)
-      const matchedUser = this.state.currentUsers
+      const matchedUser = this.state.currentUsers  //loop through the users array and matched with the dessert clicked
         .find(user => user.dessert === liValue.target.innerHTML)
       this.showInfoWindow(matchedMarker)
       this.showInfobar()
-      //start animation and stop it in 3.5 seconds
       matchedMarker.setAnimation(window.google.maps.Animation.BOUNCE)
       marker && setTimeout(()=>marker.setAnimation(null) ,3500)
       this.setState({selectedUser: matchedUser})
     } else {
-      console.log('markerwasClicked')
       marker = clicked
-      const matchedUser = this.state.currentUsers
+      const matchedUser = this.state.currentUsers //loop through the users array and matched with the marker clicked
         .find(user => user.dessert === marker.title)
       this.showInfoWindow(marker)
       this.showInfobar()
-      //start animation and stop it in 3.5 seconds
       marker && marker.setAnimation(window.google.maps.Animation.BOUNCE)
       setTimeout(()=>marker.setAnimation(null) ,3500)
       this.setState({selectedUser: matchedUser})
     }}
 
+  add_listener = (marker) => {
+    marker.addListener('click', () => {this.handleClick(marker)})
+  }  
+
   setMarkers = (map, markers) => {
     markers.map( marker => marker.setMap(map))
   }
 
-  add_listener = (marker) => {
-    marker.addListener('click', () => {this.handleClick(marker)})
-  }
+  eraseMarkers = (markers) => {
+    this.setMarkers(null, markers)
+  } 
 
   showInfoWindow = (marker) => {
     marker.infowindow.open(this.state.map, marker)
@@ -163,20 +144,18 @@ class App extends Component {
           hideInfobar = {this.hideInfobar}
           selectedUser = {this.state.selectedUser}
         />
-        <AppMap 
-        />
+        <AppMap />
         <AppFooter />
-
       </div>
     );
   }
 }
 function loadScript(url) {
-  const index = window.document.getElementsByTagName("script")[0]
-  const script = window.document.createElement("script")
-  script.src = url
-  script.assync = true
-  script.defer = true
-  index.parentNode.insertBefore(script, index)
+  const index = window.document.getElementsByTagName("script")[0]  //grabs an script element existing on the DOM
+  const script = window.document.createElement("script")  //creates a script element
+  script.src = url  //sets the source of the newly created script tag to the "url" parameter
+  script.assync = true  //sets the assync property to true
+  script.defer = true  //sets the defer property to true
+  index.parentNode.insertBefore(script, index)  // insert our newly created script into the DOM.
 }
 export default App;
