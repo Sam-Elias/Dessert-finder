@@ -14,6 +14,7 @@ class App extends Component {
       allUsers:[],
       currentUsers: [],
       selectedUser:{},
+      map:{},
       markers: [],
       query:"",
       infoWindowOpen: false,
@@ -29,7 +30,7 @@ class App extends Component {
     fetch("https://api.myjson.com/bins/cm76u")
       .then(resp => resp.json())
       .then(data => {this.setState({allUsers: data.users, currentUsers: data.users}, this.loadMap())})  //sets the state when it receives the data from the promise, then it calls the loadMap function
-      .catch(error => {<div><h1>We got this problem :${error}</h1><p>Please reload your page</p></div>})
+      .catch(error => {return (<div><h1>We got this problem :${error}</h1><p>Please reload your page</p></div>)})
   }
 
   loadMap = () => {
@@ -68,7 +69,7 @@ class App extends Component {
   filterUsers = (query) => {
     const match = new RegExp(escapeStringRegexp(query.target.value), 'i')  //create a regular expression instance with the query value, case insensitive
     let filteredByDessert = this.state.allUsers.filter((user) => match.test(user.dessert))  //create an array of users.dessert that match the regular expression
-    this.setState({query: query.target.value.trim(), currentUsers: filteredByDessert})  //set the query state and update current users
+    this.setState({query: query.target.value.trim(), currentUsers: filteredByDessert}, this.makeMarkers(this.state.map))  //set the query state and update current users
   }
 
   handleClick = (clicked) => {
